@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+#home {
+    text-align: center;
+}
+
+#about p {
+    max-width: 600px;
+    margin: auto;
+}
+
+#skills .card {
+    text-align: center;
+    font-weight: bold;
+}
+
+#projects .card {
+    margin-top: 15px;
+}
+
+#contact p {
+    margin: 5px 0;
+}
+
+footer {
+    font-size: 14px;
+}

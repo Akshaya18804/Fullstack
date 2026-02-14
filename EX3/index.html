@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KCET Learning - Cricket Records Quiz</title>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .quiz-container {
+            width: 550px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 25px;
+        }
+
+        .question {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .options label {
+            display: block;
+            background: #f4f6f8;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .options label:hover {
+            background: #e6ecf5;
+            border-color: #1e3c72;
+        }
+
+        .options input {
+            margin-right: 10px;
+        }
+
+        .buttons {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #fff;
+            background: #1e3c72;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #2a5298;
+            transform: scale(1.05);
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        .result {
+            text-align: center;
+            font-size: 20px;
+            color: #1e3c72;
+        }
+
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #wrongAnswers {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #wrongAnswers h3 {
+            color: #d9534f;
+        }
+
+        .wrong-item {
+            background: #fff3f3;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 5px solid #d9534f;
+            font-size: 16px;
+        }
+
+        .correct {
+            color: green;
+            font-weight: 600;
+        }
+
+        .wrong {
+            color: red;
+            font-weight: 600;
+        }
+
+        #restart {
+            background: #28a745;
+            margin-top: 15px;
+        }
+
+        #restart:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container">
+    <h2>🏏 KCET Learning – Cricket Records Quiz</h2>
+
+    <div id="quiz">
+        <div class="question"></div>
+        <div class="options"></div>
+
+        <div class="buttons">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+
+        <div class="error"></div>
+    </div>
+
+    <div id="result" class="result" style="display:none;">
+        <p id="score"></p>
+        <div id="wrongAnswers"></div>
+        <button id="restart">Restart Quiz</button>
+    </div>
+</div>
+
+<script>
+$(document).ready(function () {
+
+    var questions = [
+        {
+            question: "Who is the fastest player to score 10,000 runs in ODI cricket?",
+            options: ["Sachin Tendulkar", "Virat Kohli", "AB de Villiers"],
+            answer: 1
+        },
+        {
+            question: "Which team has won the most ICC Cricket World Cups (ODI format)?",
+            options: ["India", "West Indies", "Australia"],
+            answer: 2
+        },
+        {
+            question: "Virat Kohli scored his highest individual Test score of 254* against which country?",
+            options: ["South Africa", "Sri Lanka", "England"],
+            answer: 1
+        },
+        {
+            question: "Which country holds the record for the highest team total in ODIs?",
+            options: ["India", "England", "Australia"],
+            answer: 1
+        },
+        {
+            question: "Which team has won the most ICC World Test Championship titles?",
+            options: ["Australia", "India", "New Zealand"],
+            answer: 0
+        }
+    ];
+
+    var currentIndex = 0;
+    var userAnswers = [];
+
+    function loadQuestion(index) {
+        $(".question").hide().text(questions[index].question).fadeIn(300);
+        $(".options").html("");
+
+        $.each(questions[index].options, function (i, option) {
+            var checked = userAnswers[index] == i ? "checked" : "";
+            $(".options").append(
+                `<label>
+                    <input type="radio" name="option" value="${i}" ${checked}> ${option}
+                 </label>`
+            );
+        });
+
+        $(".error").text("");
+    }
+
+    $("#next").click(function () {
+        var selected = $("input[name='option']:checked").val();
+
+        if (selected === undefined) {
+            $(".error").text("Please select an answer before proceeding.");
+            return;
+        }
+
+        userAnswers[currentIndex] = parseInt(selected);
+
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            loadQuestion(currentIndex);
+        } else {
+            showResult();
+        }
+    });
+
+    $("#prev").click(function () {
+        if (currentIndex > 0) {
+            currentIndex--;
+            loadQuestion(currentIndex);
+        }
+    });
+
+    function showResult() {
+        var score = 0;
+        var wrongHTML = "<h3>❌ Wrong Answers Review</h3>";
+
+        $.each(questions, function (i, q) {
+            if (userAnswers[i] === q.answer) {
+                score++;
+            } else {
+                wrongHTML += `
+                    <div class="wrong-item">
+                        <b>Q${i + 1}:</b> ${q.question}<br>
+                        <span class="wrong">Your Answer:</span> ${q.options[userAnswers[i]] || "Not Answered"}<br>
+                        <span class="correct">Correct Answer:</span> ${q.options[q.answer]}
+                    </div>
+                `;
+            }
+        });
+
+        $("#quiz").hide();
+        $("#result").fadeIn();
+        $("#score").text("Your Score: " + score + " / " + questions.length);
+
+        if (score === questions.length) {
+            $("#wrongAnswers").html("<p class='correct'>🎉 Excellent! All answers are correct.</p>");
+        } else {
+            $("#wrongAnswers").html(wrongHTML);
+        }
+    }
+
+    $("#restart").click(function () {
+        currentIndex = 0;
+        userAnswers = [];
+        $("#result").hide();
+        $("#quiz").fadeIn();
+        loadQuestion(currentIndex);
+    });
+
+    loadQuestion(currentIndex);
+});
+</script>
+
+</body>
+</html>
